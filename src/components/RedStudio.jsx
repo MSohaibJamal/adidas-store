@@ -16,6 +16,13 @@ export function RedStudio(props) {
   const grayRef = useRef();
 
   const [theme, setTheme] = useState("default");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     [redBake, grayBake, whiteBake, defaultBake].forEach((tex) => {
@@ -47,6 +54,7 @@ export function RedStudio(props) {
   }, [theme, materials, redBake, grayBake, whiteBake, defaultBake]);
 
   const hoverIn = (ref, theme) => {
+    if (isMobile) return; // Disable hover effects on mobile for better UX
     setTheme(theme);
     document.body.style.cursor = "pointer";
 
@@ -54,7 +62,7 @@ export function RedStudio(props) {
     gsap.killTweensOf(ref.current.rotation);
 
     gsap.to(ref.current.position, {
-      z: 0,
+      z: 0.1,
       duration: 1,
       ease: "power4.out",
     });
@@ -67,6 +75,7 @@ export function RedStudio(props) {
   };
 
   const hoverOut = (ref, originalZ, originalRotation) => {
+    if (isMobile) return;
     document.body.style.cursor = "default";
 
     gsap.killTweensOf(ref.current.position);
@@ -87,22 +96,29 @@ export function RedStudio(props) {
     setTheme("default");
   };
 
+  // Responsive positions
+  const shirtScale = isMobile ? 0.8 : 1;
+  const horizontalGap = isMobile ? 0.45 : 0.65;
+  const verticalPos = isMobile ? 0.6 : 0.7;
+  const depthPos = isMobile ? -0.2 : -0.45;
+
   return (
-    <group {...props} dispose={null}>
+    <group {...props} dispose={null} scale={shirtScale}>
       <mesh
         geometry={nodes.Environment.geometry}
         material={materials["Material.010"]}
+        scale={1 / shirtScale} // Keep environment at full scale
       />
 
       <mesh
         ref={whiteRef}
         geometry={nodes.Shirt_White.geometry}
         material={materials["Material.011"]}
-        position={[0.65, 0.7, -0.45]}
-        rotation={[0, Math.PI / 9, 0]}
+        position={[horizontalGap, verticalPos, depthPos]}
+        rotation={[0, Math.PI / 10, 0]}
         onPointerEnter={() => hoverIn(whiteRef, "white")}
         onPointerLeave={() =>
-          hoverOut(whiteRef, -0.45, Math.PI / 9)
+          hoverOut(whiteRef, depthPos, Math.PI / 10)
         }
       />
 
@@ -110,9 +126,10 @@ export function RedStudio(props) {
         ref={redRef}
         geometry={nodes.Shirt_Sport.geometry}
         material={materials["Material.012"]}
-        position={[0, 0.7, 0]}
+        position={[0, verticalPos, 0]}
         rotation={[0, 0, 0]}
         onPointerEnter={() => {
+          if (isMobile) return;
           setTheme("red");
           document.body.style.cursor = "pointer";
 
@@ -125,6 +142,7 @@ export function RedStudio(props) {
           });
         }}
         onPointerLeave={() => {
+          if (isMobile) return;
           document.body.style.cursor = "default";
 
           gsap.killTweensOf(redRef.current.position);
@@ -143,15 +161,16 @@ export function RedStudio(props) {
         ref={grayRef}
         geometry={nodes.Shirt_Gray.geometry}
         material={materials["Material.013"]}
-        position={[-0.65, 0.7, -0.45]}
-        rotation={[0, -Math.PI / 9, 0]}
+        position={[-horizontalGap, verticalPos, depthPos]}
+        rotation={[0, -Math.PI / 10, 0]}
         onPointerEnter={() => hoverIn(grayRef, "gray")}
         onPointerLeave={() =>
-          hoverOut(grayRef, -0.45, -Math.PI / 9)
+          hoverOut(grayRef, depthPos, -Math.PI / 10)
         }
       />
     </group>
   );
 }
+
 
 useGLTF.preload("models/Studio.glb");

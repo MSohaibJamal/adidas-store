@@ -1,9 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;700;900&display=swap');
 
 @import "tailwindcss";
 
+@theme {
+  --font-outfit: "Outfit", sans-serif;
+  --font-space: "Space Grotesk", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #000;
+}
+
+body {
+  font-family: var(--font-outfit);
+  color: white;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 nav {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-space);
 }
 
 * {
@@ -14,6 +33,18 @@ nav {
   display: none;
 }
 
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.4) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 @keyframes slowZoom {
   from {
     transform: scale(1.05);
@@ -22,4 +53,4 @@ nav {
   to {
     transform: scale(1.12);
   }
-}
+}

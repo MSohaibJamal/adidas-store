@@ -14,29 +14,43 @@ const App = () => {
   const cameraRef = useRef();
 
   return (
-    <main className="w-full h-screen">
+    <main className="w-full min-h-screen bg-black">
       <Cursor />
       <ScrollBar />
       <Nave />
      
-      <Canvas dpr={[1, 1.5]}>
-        <PerspectiveCamera
-          ref={cameraRef}
-          makeDefault
-          position={[0, 0.7, 0.4]}
-        />
+      <div className="w-full h-screen relative">
+        <Canvas 
+          dpr={[1, 2]} 
+          gl={{ antialias: true, alpha: true }}
+          camera={{ position: [0, 0.7, 0.4], fov: window.innerWidth < 768 ? 65 : 45 }}
+        >
+          <PerspectiveCamera
+            ref={cameraRef}
+            makeDefault
+            position={[0, 0.7, 0.4]}
+            fov={window.innerWidth < 768 ? 65 : 45}
+          />
 
-        <CameraAnimation cameraRef={cameraRef} />
+          <CameraAnimation cameraRef={cameraRef} />
 
-        <ambientLight intensity={1} />
+          <ambientLight intensity={1.5} />
+          <pointLight position={[10, 10, 10]} intensity={1} />
+          <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
 
-        <RedStudio />
-      </Canvas>
+          <RedStudio />
+        </Canvas>
+        
+        {/* Subtle overlay for luxury feel */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
+      </div>
+
       <AdSection />
       <Collections />
       <Footer/>
     </main>
   );
 };
+
 
 export default App;
